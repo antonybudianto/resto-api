@@ -1,12 +1,12 @@
-CREATE DATABASE restohub;
-USE restohub;
-
 -- Adminer 4.3.1 MySQL dump
 
 SET NAMES utf8;
 SET time_zone = '+00:00';
 SET foreign_key_checks = 0;
 SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
+
+CREATE DATABASE `restohub` /*!40100 DEFAULT CHARACTER SET latin1 */;
+USE `restohub`;
 
 DROP TABLE IF EXISTS `books`;
 CREATE TABLE `books` (
@@ -62,7 +62,7 @@ CREATE TABLE `restaurants` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 INSERT INTO `restaurants` (`id`, `name`, `slug`, `cuisine_id`, `country_id`, `lat`, `lng`, `address`, `rating`) VALUES
-(1,	'Holycow',	'holycow',	1,	1,	1.000000,	1.000000,	'Jl. Guru Mughni No.12',	5.0);
+(1,	'Holycow',	'holycow',	1,	1,	-6.223690,	106.820374,	'Jl. Guru Mughni No.12',	5.0);
 
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
@@ -76,4 +76,4 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `name`, `email`, `password`) VALUES
 (1,	'antony',	'antonybudianto@gmail.com',	'1234');
 
--- 2018-02-18 14:36:30
+-- 2018-02-18 14:47:58
