@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 const radius = 5
@@ -22,11 +23,11 @@ func (handler *Handler) getNearestRestaurants(w http.ResponseWriter, r *http.Req
 	query := r.URL.Query()
 	latKeys, _ := query["lat"]
 	lngKeys, _ := query["lng"]
-	lat := latKeys[0]
-	lng := lngKeys[0]
+	lat, _ := strconv.ParseFloat(latKeys[0], 64)
+	lng, _ := strconv.ParseFloat(lngKeys[0], 64)
 
-	log.Printf("GET nearest resto lat:%s lng:%s", lat, lng)
-	restaurants, err := model.GetRestaurants(handler.DB, 0, top)
+	log.Printf("GET nearest resto lat:%f lng:%f", lat, lng)
+	restaurants, err := model.GetRestaurants(handler.DB, 0, top, lat, lng)
 
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())

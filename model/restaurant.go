@@ -5,6 +5,8 @@ import (
 	"fmt"
 )
 
+const nearestKm = 5
+
 // Restaurant data
 type Restaurant struct {
 	ID        int     `json:"id"`
@@ -16,11 +18,22 @@ type Restaurant struct {
 	Longitude float64 `json:"longitude"`
 	Address   string  `json:"address"`
 	Rating    float32 `json:"rating"`
+	Distance  float64 `json:"distance"`
 }
 
 // GetRestaurants : get restaurants
-func GetRestaurants(db *sql.DB, start, count int) ([]Restaurant, error) {
-	statement := fmt.Sprintf("SELECT id, name, slug, cuisine_id, country_id, lat, lng, address, rating FROM restaurants LIMIT %d OFFSET %d", count, start)
+// source: https://developers.google.com/maps/articles/phpsqlsearch_v3
+func GetRestaurants(db *sql.DB, start, count int, lat, lng float64) ([]Restaurant, error) {
+	statement := fmt.Sprintf(`
+	SELECT id, name, slug, cuisine_id, country_id, lat, lng, address, rating,
+	( 6371 * acos( cos( radians(%f) ) *
+	cos( radians( lat ) ) *
+	cos( radians( lng ) - radians(%f) ) +
+	sin( radians(%f) ) * sin( radians( lat ) ) ) ) AS distance
+	FROM restaurants
+	HAVING distance < %d
+	ORDER BY distance
+	LIMIT %d OFFSET %d`, lat, lng, lat, nearestKm, count, start)
 	rows, err := db.Query(statement)
 
 	if err != nil {
@@ -39,7 +52,8 @@ func GetRestaurants(db *sql.DB, start, count int) ([]Restaurant, error) {
 			&r.Latitude,
 			&r.Longitude,
 			&r.Address,
-			&r.Rating); err != nil {
+			&r.Rating,
+			&r.Distance); err != nil {
 			return nil, err
 		}
 		restaurants = append(restaurants, r)
