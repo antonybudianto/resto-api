@@ -28,6 +28,6 @@ func main() {
 	log.Printf("Resto API running at %d", apiPort)
 
 	a := app.App{}
-	a.Initialize("root", "hello", "rest_api_example")
+	a.Initialize("root", "hello", "restohub")
 	a.Run(fmt.Sprintf(":%d", apiPort))
 }

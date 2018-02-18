@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	// for driver
+	"github.com/antonybudianto/resto-api/routes/api"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 )
@@ -37,5 +38,6 @@ func (a *App) Run(addr string) {
 }
 
 func (a *App) initializeRoutes() {
-
+	apiHandler := api.Handler{Router: a.Router, DB: a.DB}
+	apiHandler.InitializeRoutes()
 }
