@@ -37,6 +37,29 @@ func (handler *Handler) getNearestRestaurants(w http.ResponseWriter, r *http.Req
 	respondWithJSON(w, http.StatusOK, restaurants)
 }
 
+func (handler *Handler) createBooking(w http.ResponseWriter, r *http.Request) {
+	var b model.Book
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&b); err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	defer r.Body.Close()
+
+	// TODO: User id should be from cookie/token. For demo purpose, I used dummy ID user.
+	b.UserID = 1
+
+	id, err := b.CreateBook(handler.DB)
+
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	log.Printf("Booking %d created", id)
+	respondWithJSON(w, http.StatusCreated, b)
+}
+
 func respondWithError(w http.ResponseWriter, code int, message string) {
 	respondWithJSON(w, code, map[string]string{"error": message})
 }
@@ -52,4 +75,5 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 // InitializeRoutes for restaurant endpoints
 func (handler *Handler) InitializeRoutes() {
 	handler.Router.HandleFunc("/restaurants", handler.getNearestRestaurants).Methods("GET")
+	handler.Router.HandleFunc("/restaurants/book", handler.createBooking).Methods("POST")
 }
