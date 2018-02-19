@@ -19,6 +19,30 @@ type Handler struct {
 	DB     *sql.DB
 }
 
+// RestaurantLocationResponse - Custom restaurant location
+type RestaurantLocationResponse struct {
+	Address   string  `json:"address"`
+	CountryID string  `json:"countryId"`
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+}
+
+// RestaurantResponse - Custom restaurant response
+type RestaurantResponse struct {
+	ID        int                        `json:"id"`
+	Name      string                     `json:"name"`
+	Slug      string                     `json:"slug"`
+	Location  RestaurantLocationResponse `json:"location"`
+	CuisineID string                     `json:"cuisineId"`
+	Rating    float32                    `json:"rating"`
+	Distance  float64                    `json:"distance"`
+}
+
+// DataResponse - Restaurant outer response
+type DataResponse struct {
+	Data []RestaurantResponse `json:"data"`
+}
+
 func (handler *Handler) getNearestRestaurants(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
 	latKeys, _ := query["lat"]
@@ -28,13 +52,36 @@ func (handler *Handler) getNearestRestaurants(w http.ResponseWriter, r *http.Req
 
 	log.Printf("GET nearest resto lat:%f lng:%f", lat, lng)
 	restaurants, err := model.GetRestaurants(handler.DB, 0, top, lat, lng)
+	restoPayload := []RestaurantResponse{}
+
+	for i := 0; i < len(restaurants); i++ {
+		resto := restaurants[i]
+		restoLocationPayload := RestaurantLocationResponse{
+			resto.Address,
+			resto.CountryID,
+			resto.Latitude,
+			resto.Longitude,
+		}
+		payload := RestaurantResponse{
+			resto.ID,
+			resto.Name,
+			resto.Slug,
+			restoLocationPayload,
+			resto.CuisineID,
+			resto.Rating,
+			resto.Distance,
+		}
+		restoPayload = append(restoPayload, payload)
+	}
+
+	dataPayload := DataResponse{restoPayload}
 
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, restaurants)
+	respondWithJSON(w, http.StatusOK, dataPayload)
 }
 
 func (handler *Handler) createBooking(w http.ResponseWriter, r *http.Request) {
