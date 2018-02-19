@@ -4,6 +4,7 @@ REST API Backend for RestoHub
 ## Prerequisites
 - Go
 - MySQL
+  - SQL dump [here](https://github.com/antonybudianto/resto-api/blob/master/files/db/create_table.sql)
 
 ## Start manually
 ```
