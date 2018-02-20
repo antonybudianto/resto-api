@@ -21,7 +21,7 @@ docker-compose up
 **GET** http://localhost:8000/restaurants?lat=-6.2237107&lng=106.8203731
 
 ### Book restaurants
-**POST** http://localhost:8000/restaurants/book
+**POST** http://localhost:8000/books/
 
 Request body:
 ```json

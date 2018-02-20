@@ -122,5 +122,5 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 // InitializeRoutes for restaurant endpoints
 func (handler *Handler) InitializeRoutes() {
 	handler.Router.HandleFunc("/restaurants", handler.getNearestRestaurants).Methods("GET")
-	handler.Router.HandleFunc("/restaurants/book", handler.createBooking).Methods("POST")
+	handler.Router.HandleFunc("/books", handler.createBooking).Methods("POST")
 }
